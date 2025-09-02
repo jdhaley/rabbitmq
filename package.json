@@ -15,6 +15,7 @@
 		"nodemon": "^3.1.10"
 	},
 	"scripts": {
-		"send": "nodemon --watch src --ext ts --exec tsx src/send.ts"
+		"send": "tsx src/send.ts",
+		"receive": "nodemon --watch src --ext ts --exec tsx src/receive.ts"
 	}
 }

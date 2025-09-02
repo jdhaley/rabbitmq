@@ -1,4 +1,4 @@
-import { connect } from "amqplib"
+import { Channel, connect } from "amqplib"
 
 async function createChannel(url: string, qName: string) {
 	const conn = await connect(url);
@@ -7,10 +7,16 @@ async function createChannel(url: string, qName: string) {
 	return channel;
 }
 
-async function main(qName: string, msg: string) {
-	const channel = await createChannel("amqp://localhost", qName)
-	channel.sendToQueue(qName, Buffer.from(msg));
-	console.log(`Message "${msg}" sent.`);
+async function send(qName: string, msg: string) {
+	let channel: Channel
+	try {
+		channel = await createChannel("amqp://localhost", qName)
+		channel.sendToQueue(qName, Buffer.from(msg));
+		console.log(`Message "${msg}" sent.`);
+	} finally {
+		//channel.close();
+	}
 }
 
-main("q1", "Hello, world!");
+send("q1", "Hello, world!");
+console.log("done");
