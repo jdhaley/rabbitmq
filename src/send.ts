@@ -1,20 +1,16 @@
-import { Channel, connect } from "amqplib"
-
-async function createChannel(url: string, qName: string) {
-	const conn = await connect(url);
-	const channel = conn.createChannel();
-	(await channel).assertQueue(qName);
-	return channel;
-}
+import { Channel, ChannelModel } from "amqplib"
+import { createChannel } from "./amqplibUtil";
 
 async function send(qName: string, msg: string) {
 	let channel: Channel
+	let conn: ChannelModel
 	try {
-		channel = await createChannel("amqp://localhost", qName)
+		({ conn, channel } = await createChannel("amqp://localhost", qName))
 		channel.sendToQueue(qName, Buffer.from(msg));
 		console.log(`Message "${msg}" sent.`);
 	} finally {
-		//channel.close();
+		await channel.close();
+		await conn?.close();
 	}
 }
 
